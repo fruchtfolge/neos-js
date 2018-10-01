@@ -23,9 +23,9 @@ NEOS.help()
 
 
 NEOS.submitJob(xml)
-    .then(res => {
-        NEOS.getJobStatus(6194621, 'OzZLvyxV')
-    })
-    .catch(err => {
-        console.log(err)
-    })
+  .then(res => {
+    console.log(res)
+  })
+  .catch(err => {
+    console.log(err)
+  })
