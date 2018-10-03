@@ -1,0 +1,38 @@
+<?xml version='1.0'?>
+<methodResponse>
+<params>
+<param>
+<value><string>&lt;document&gt;
+&lt;category&gt;milp&lt;/category&gt;
+&lt;solver&gt;CPLEX&lt;/solver&gt;
+&lt;inputMethod&gt;GAMS&lt;/inputMethod&gt;
+
+&lt;model&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/model&gt;
+
+&lt;options&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/options&gt;
+
+&lt;gdx&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/gdx&gt;
+
+&lt;wantgdx&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/wantgdx&gt;
+
+&lt;wantlog&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/wantlog&gt;
+
+&lt;comments&gt;&lt;![CDATA[
+...Insert Value Here...
+]]&gt;&lt;/comments&gt;
+
+&lt;/document&gt;
+</string></value>
+</param>
+</params>
+</methodResponse>

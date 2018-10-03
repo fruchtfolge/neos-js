@@ -1,0 +1,18 @@
+<methodResponse>
+  <params>
+    <param>
+      <value>
+        <array>
+          <data>
+            <value>
+              <int>6307818</int>
+            </value>
+            <value>
+              <string>gtDixCdP</string>
+            </value>
+          </data>
+        </array>
+      </value>
+    </param>
+  </params>
+</methodResponse>

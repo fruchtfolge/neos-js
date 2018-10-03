@@ -14,8 +14,9 @@
   "author": "Christoph Pahmeyer <christoph.pahmeyer@uni-bonn.de>",
   "license": "MIT",
   "dependencies": {
+    "fast-xml-parser": "^3.12.5",
     "json2xml": "^0.1.3",
     "superagent": "^4.0.0-beta.5",
-    "xml2json-light": "^1.0.6"
+    "xml-extract": "^1.1.0"
   }
 }

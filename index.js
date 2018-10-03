@@ -21,7 +21,7 @@ const NEOS = {
     return promisify('printQueue')
   },
   getSolverTemplate(category, solvername, inputMethod) {
-    return promisify('getSolverTemplate', [category,solvername, inputMethod])
+    return promisify('getSolverTemplate', [category, solvername, inputMethod])
   },
   listAllSolvers() {
     return promisify('listAllSolvers')
@@ -32,7 +32,7 @@ const NEOS = {
   listSolversInCategory(category) {
     return promisify('listSolversInCategory', [category])
   },
-  
+
   // Submitting Jobs and Retrieving Results from NEOS
   submitJob(xml) {
     return promisify('submitJob', [xml])

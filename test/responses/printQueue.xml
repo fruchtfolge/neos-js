@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<methodResponse>
+<params>
+<param>
+<value><string>
+Running:
+
+  Job #   Cat   Solver     Input  Submitted    Started      Elapsed  Host 
+------------------------------------------------------------------------------------------------
+6309001   go    BARON      GAMS    10/2 03:04   10/2 03:04  2:34:53  prod-sub-1.neos-server.org
+6309002   go    BARON      GAMS    10/2 03:05   10/2 03:05  2:34:01  prod-sub-1.neos-server.org
+6309003   go    BARON      GAMS    10/2 03:05   10/2 03:05  2:33:35  prod-sub-1.neos-server.org
+6309004   go    BARON      GAMS    10/2 03:06   10/2 03:06  2:33:11  prod-sub-1.neos-server.org
+6309047   lp    CPLEX      GAMS    10/2 04:24   10/2 04:24  1:15:19  prod-sub-1.neos-server.org
+6309078   minco Couenne    AMPL    10/2 05:31   10/2 05:31  0:08:20  prod-sub-1.neos-server.org
+
+Queued:
+  No Jobs in Queue
+
+</string></value>
+</param>
+</params>
+</methodResponse>

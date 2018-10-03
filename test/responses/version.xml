@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<methodResponse>
+<params>
+<param>
+<value><string>neos version 5 (Madison)</string></value>
+</param>
+</params>
+</methodResponse>
