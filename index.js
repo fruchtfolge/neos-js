@@ -1,68 +1,96 @@
-const promisify = require('./src/promisify.js')
+const util = require('./src/utils.js')
 
 const NEOS = {
   // Retrieving information from NEOS
   help() {
-    return promisify('help')
+    return util.call('help')
   },
   emailHelp() {
-    return promisify('emailHelp')
+    return util.call('emailHelp')
   },
   welcome() {
-    return promisify('welcome')
+    return util.call('welcome')
   },
   version() {
-    return promisify('version')
+    return util.call('version')
   },
   ping() {
-    return promisify('ping')
+    return util.call('ping')
   },
   printQueue() {
-    return promisify('printQueue')
+    return util.call('printQueue')
   },
   getSolverTemplate(category, solvername, inputMethod) {
-    return promisify('getSolverTemplate', [category, solvername, inputMethod])
+    return util.call('getSolverTemplate', [category, solvername, inputMethod])
   },
   listAllSolvers() {
-    return promisify('listAllSolvers')
+    return util.call('listAllSolvers')
   },
   listCategories() {
-    return promisify('listCategories')
+    return util.call('listCategories')
   },
   listSolversInCategory(category) {
-    return promisify('listSolversInCategory', [category])
+    return util.call('listSolversInCategory', [category])
   },
 
   // Submitting Jobs and Retrieving Results from NEOS
   submitJob(xml) {
-    return promisify('submitJob', [xml])
+    return util.call('submitJob', [xml])
   },
   authenticatedSubmitJob(xml, user, password) {
-    return promisify('authenticatedSubmitJob', [xml, user, password])
+    return util.call('authenticatedSubmitJob', [xml, user, password])
   },
   getJobStatus(jobNumber, password) {
-    return promisify('getJobStatus', [jobNumber, password])
+    if (typeof jobNumber === 'object') {
+      const credentials = jobNumber
+      jobNumber = credentials.jobNumber
+      password = credentials.password
+    }
+    return util.call('getJobStatus', [jobNumber, password])
   },
   getJobInfo(jobNumber, password) {
-    return promisify('getJobInfo', [jobNumber, password])
+    if (typeof jobNumber === 'object') {
+      const credentials = jobNumber
+      jobNumber = credentials.jobNumber
+      password = credentials.password
+    }
+    return util.call('getJobInfo', [jobNumber, password])
   },
   killJob(jobNumber, password) {
-    return promisify('killJob', [jobNumber, password])
+    if (typeof jobNumber === 'object') {
+      const credentials = jobNumber
+      jobNumber = credentials.jobNumber
+      password = credentials.password
+    }
+    return util.call('killJob', [jobNumber, password])
   },
   getFinalResults(jobNumber, password) {
-    return promisify('getFinalResults', [jobNumber, password])
+    if (typeof jobNumber === 'object') {
+      const credentials = jobNumber
+      jobNumber = credentials.jobNumber
+      password = credentials.password
+    }
+    return util.call('getFinalResults', [jobNumber, password])
   },
   getIntermediateResults(jobNumber, password, offset) {
-    return promisify('getIntermediateResults', [jobNumber, password, offset])
+    return util.call('getIntermediateResults', [jobNumber, password, offset])
   },
   getFinalResultsNonBlocking(jobNumber, password) {
-    return promisify('getFinalResultsNonBlocking', [jobNumber, password])
+    if (typeof jobNumber === 'object') {
+      const credentials = jobNumber
+      jobNumber = credentials.jobNumber
+      password = credentials.password
+    }
+    return util.call('getFinalResultsNonBlocking', [jobNumber, password])
   },
   getIntermediateResultsNonBlocking(jobNumber, password, offset) {
-    return promisify('getIntermediateResultsNonBlocking', [jobNumber, password, offset])
+    return util.call('getIntermediateResultsNonBlocking', [jobNumber, password, offset])
   },
   getOutputFile(jobNumber, password, filename) {
-    return promisify('getOutputFile', [jobNumber, password, filename])
+    return util.call('getOutputFile', [jobNumber, password, filename])
+  },
+  prepareJob(template, model, email) {
+    return util.prepareJob(template, model, email)
   }
 }
 

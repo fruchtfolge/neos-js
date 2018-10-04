@@ -1,4 +1,4 @@
-const request = require('superagent')
+const https = require('https')
 const json2xml = require('json2xml')
 
 const HEADER = '<?xml version="1.0"?>'
@@ -63,13 +63,26 @@ proto.call = function(method, params, cb) {
 
   xml = HEADER + xml
 
-  request
-    .post(this.url)
-    .send(xml)
-    .end(function(err, res) {
-      if (err) return cb(err)
-      cb(null, res.text)
+  const options = {
+    hostname: 'neos-server.org',
+    port: 3333,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': xml.length
+    }
+  }
+
+  const req = https.request(options, (res) => {
+    res.on('end', (data) => {
+      resolve(data)
     })
+  })
+
+  req.on('error', (e) => {
+    reject(e)
+  })
+
 }
 
 module.exports = Client

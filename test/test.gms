@@ -1,9 +1,3 @@
-<document>
-	<category>milp</category>
-	<solver>CPLEX</solver>
-	<inputMethod>GAMS</inputMethod>
-	<model>
-		<![CDATA[
 $ontext
   jsLPsolver conversion
   project: Fruchtfolge
@@ -633,22 +627,4 @@ e_Objective..
 
 model Fruchtfolge / all /;
 option optcr = 0.1;
-solve Fruchtfolge using MIP maximizing gm;]]>
-	</model>
-	<options>
-		<![CDATA[]]>
-	</options>
-	<gdx>
-		<![CDATA[]]>
-	</gdx>
-	<wantgdx>
-		<![CDATA[]]>
-	</wantgdx>
-	<wantlog>
-		<![CDATA[]]>
-	</wantlog>
-	<comments>
-		<![CDATA[]]>
-	</comments>
-	<email>gams@newtest.edu</email>
-</document>
+solve Fruchtfolge using MIP maximizing gm;
