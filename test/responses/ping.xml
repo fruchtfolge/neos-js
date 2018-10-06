@@ -1,9 +1,0 @@
-<?xml version='1.0'?>
-<methodResponse>
-<params>
-<param>
-<value><string>NeosServer is alive
-</string></value>
-</param>
-</params>
-</methodResponse>
