@@ -1,31 +1,111 @@
 const NEOS = require('../index.js')
+const assert = require('assert')
 const fs = require('fs')
 
-// read example GAMS XML job
-const xml = fs.readFileSync('test.xml', 'utf-8')
+// read example GAMS transport model
+const gms = fs.readFileSync('test/transport_model.gms', 'utf-8')
 
-/*
-NEOS.getJobStatus(6194621, 'OzZLvyxV')
-    .then(res => {
-        console.log(res)
-    }).catch(err => {
-        console.log(err)
-    })
-*/
-/*
+// test all methods without args
 NEOS.help()
-    .then(res => {
-        console.log(res)
-    }).catch(err => {
-        console.log(err)
-    })
-*/
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/help.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
 
+NEOS.emailHelp()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/emailHelp.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
 
-NEOS.submitJob(xml)
-    .then(res => {
-        NEOS.getJobStatus(6194621, 'OzZLvyxV')
-    })
-    .catch(err => {
-        console.log(err)
-    })
+NEOS.welcome()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/welcome.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.version()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/version.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.ping()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/ping.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.printQueue()
+  .then(res => {
+    if (!typeof res === 'string') throw new Error('printQueue failed')
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.listAllSolvers()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/listAllSolvers.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.listCategories()
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/listCategories.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+// methods with args
+NEOS.getSolverTemplate('MILP', 'CPLEX', 'GAMS')
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/getSolverTemplate.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+NEOS.listSolversInCategory('MILP')
+  .then(res => {
+    const expected = fs.readFileSync('test/responses/listSolversInCategory.json','utf-8')
+    assert.deepEqual(JSON.stringify(res),expected)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+
+// test README example
+NEOS.getSolverTemplate('LP', 'CPLEX', 'GAMS')
+  .then(template => {
+    return NEOS.prepareJob(template, gms, 'test@test.com')
+  })
+  .then(NEOS.submitJob)
+  .then(NEOS.getFinalResults)
+  .then(res => {
+    if (typeof res !== 'string') throw new Error('GAMS job failed')
+  })
+  .catch(err => {
+    console.log(err)
+  })

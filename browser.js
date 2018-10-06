@@ -1,4 +1,4 @@
-const util = require('./src/utils.js')
+const util = require('./src/utils-browser.js')
 
 const NEOS = {
   // Retrieving information from NEOS
