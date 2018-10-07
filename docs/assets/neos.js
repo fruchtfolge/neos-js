@@ -171,7 +171,6 @@
 	var https = __webpack_require__(2);
 	var json2xml = __webpack_require__(42);
 	var xml2json = __webpack_require__(45);
-	var querystring = __webpack_require__(39);
 	var decode = __webpack_require__(46);
 
 	module.exports = {

@@ -1,7 +1,6 @@
 const https = require('https')
 const json2xml = require('json2xml')
 const xml2json = require('./parser.js')
-const querystring = require('querystring')
 const decode = require('unescape')
 
 module.exports = {
@@ -10,35 +9,35 @@ module.exports = {
     if (params) {
       var xmlParams =
         params instanceof Array ?
-        params.map(function(p) {
-          if (typeof p === 'string') {
-            return {
-              param: {
-                value: p
-              }
-            }
-          } else {
-            return {
-              param: {
-                int: p
-              }
-            }
-          }
-
-        }) : {
-          param: {
-            value: {
-              struct: Object.keys(params).map(function(k) {
-                return {
-                  member: {
-                    name: k,
-                    value: params[k]
-                  }
+          params.map(function(p) {
+            if (typeof p === 'string') {
+              return {
+                param: {
+                  value: p
                 }
-              })
+              }
+            } else {
+              return {
+                param: {
+                  int: p
+                }
+              }
+            }
+
+          }) : {
+            param: {
+              value: {
+                struct: Object.keys(params).map(function(k) {
+                  return {
+                    member: {
+                      name: k,
+                      value: params[k]
+                    }
+                  }
+                })
+              }
             }
           }
-        }
 
       xml = json2xml({
         methodCall: {
@@ -148,7 +147,7 @@ module.exports = {
         const insertValue = new RegExp('...Insert Value Here...', 'g')
         template = template.replace(insertValue, '')
         // insert model
-        template = template.replace(`<model><![CDATA[\n\n]]></model>`,`<model><![CDATA[\n${model}\n]]></model>`)
+        template = template.replace('<model><![CDATA[\n\n]]></model>',`<model><![CDATA[\n${model}\n]]></model>`)
         // insert email
         template = template.split('</document>')
         return resolve(`${template[0]}\n<email>${email}</email>\n</document>`)
