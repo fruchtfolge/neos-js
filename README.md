@@ -34,7 +34,7 @@ then
 </script>
 ```
 
-Check out the GAMS online code editor example
+Check out the [NEOS online editor](https://fruchtfolge.github.io/neos-js/index.html) example
 
 Node.js
 ```js
