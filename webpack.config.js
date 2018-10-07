@@ -44,10 +44,23 @@ const dist = Object.assign({}, config, {
   },
   output: {
     path: './dist',
-    filename: '[name].js'
+    filename: '[name].js',
+    libraryTarget: 'var'
+  }
+})
+
+const assets = Object.assign({}, config, {
+  entry: {
+    'neos': './index.js',
+    'neos.min': './index.js'
+  },
+  output: {
+    path: './docs/assets',
+    filename: '[name].js',
+    libraryTarget: 'var'
   }
 })
 
 module.exports = [
-  dist
+  dist, assets
 ]

@@ -1,0 +1,123 @@
+html, body, #editor, #app {
+  margin: 0;
+  height: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+}
+
+#editor {
+  position: fixed;
+  top: 61px;
+  width: 100%;
+}
+
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+#loading p {
+  padding-top: 15px;
+  margin-left: -10px;
+}
+
+#loaded {
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  height: 60px;
+  padding-left: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+#inputs {
+  display: inline-flex;
+  float: right;
+  position: fixed;
+  right: 0px;
+  top: 13px;
+}
+
+.input, #editor div {
+  display: inline-block;
+  width: 49%;
+  height: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+  padding: 0 20px;
+}
+
+.input {
+  border: none;
+  border-right: 1px solid #ccc;
+  resize: none;
+  outline: none;
+  background-color: #f6f6f6;
+  font-size: 14px;
+  font-family: 'Monaco', courier, monospace;
+  padding: 20px;
+}
+
+.output {
+  border: none;
+  resize: none;
+  outline: none;
+  font-size: 14px;
+  overflow: scroll;
+  font-family: 'Monaco', courier, monospace;
+  width: calc(49% - 40px);
+  padding: 20px;
+  height: 100%;
+}
+
+code {
+  color: #f66;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border:none;
+  border-radius: 0;
+  font-size: 1em;
+  width: 100%
+}
+
+select {
+  width:35%;
+  height: 35px;
+  border: 1px solid #ccc;
+  padding:.25em .5em .5em .5em;
+  background-color: white;
+  background-repeat: no-repeat;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='#ccc'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 20px) center;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+button {
+  margin-right: 20px;
+  margin-left: 5px;
+  height: 35px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  background: #ececec;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

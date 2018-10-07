@@ -6,6 +6,7 @@ const decode = require('unescape')
 
 module.exports = {
   xmlrpc(method, params) {
+    let xml
     if (params) {
       var xmlParams =
         params instanceof Array ?
@@ -109,7 +110,7 @@ module.exports = {
   getValue(json) {
     const flatRes = this.flattenObject(json)
     const resArray = Object.keys(flatRes).map(x => {
-      if (x.includes('base64')) return btoa(flatRes[x])
+      if (x.includes('base64')) return atob(flatRes[x])
       return flatRes[x]
     })
 

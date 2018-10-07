@@ -104,4 +104,8 @@ const NEOS = {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.NEOS = NEOS
+}
+
 module.exports = NEOS
