@@ -17,7 +17,7 @@
     "optimization"
   ],
   "browser": {
-    "./index.js": "./browser.js"
+    "./src/utils.js": "./src/utils-browser.js"
   },
   "author": "Christoph Pahmeyer <christoph.pahmeyer@uni-bonn.de>",
   "license": "MIT",

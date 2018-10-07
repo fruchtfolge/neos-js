@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Algebraic Modelling Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/marked@0.3.6"></script>
+  <script src="https://unpkg.com/lodash@4.16.0"></script>
+  <script src="assets/neos.js"></script>
+  <link rel="stylesheet" href="assets/master.css">
+  <link rel="stylesheet" href="assets/epic-spinners.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <div id="loading" v-if="loading">
+      <div class="atom-spinner">
+        <div class="spinner-inner">
+          <div class="spinner-line"></div>
+          <div class="spinner-line"></div>
+          <div class="spinner-line"></div>
+          <!--Chrome renders little circles malformed :(-->
+          <div class="spinner-circle">
+            &#9679;
+          </div>
+        </div>
+      </div>
+      <p>NEOS Editor</p>
+    </div>
+    <div id="loaded" v-else>
+      <div class="header">
+        <h2>NEOS Editor</h2>
+        <div id="inputs">
+          <select v-model="category">
+            <option v-for="option in categories" v-bind:value="option">
+              {{ option }}
+            </option>
+          </select>
+          <select v-model="solver">
+            <option v-for="option in solvers" v-bind:value="option">
+              {{ option }}
+            </option>
+          </select>
+          <select v-model="language">
+            <option v-for="option in languages" v-bind:value="option">
+              {{ option }}
+            </option>
+          </select>
+        <button type="button" name="solve" @click="solveModel()">Run</button>
+        </div>
+      </div>
+      <div id="editor">
+        <textarea class="input" :value="input"></textarea>
+        <textarea class="output" :value="output"></textarea>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          loading: true,
+          input: `Sets
+       i   canning plants   / Seattle, San-Diego /
+       j   markets          / New-York, Chicago, Topeka / ;
+Parameters
+       a(i)  capacity of plant i in cases
+         /    Seattle     350
+              San-Diego   600  /
+       b(j)  demand at market j in cases
+         /    New-York    325
+              Chicago     300
+              Topeka      275  / ;
+Table  d(i,j)  distance in thousands of miles
+                  New-York       Chicago      Topeka
+    Seattle          2.5           1.7          1.8
+    San-Diego        2.5           1.8          1.4  ;
+Scalar f  freight in dollars per case per thousand miles  /90/ ;
+Parameter
+       c(i,j)  transport cost in thousands of dollars per case ;
+c(i,j) = f * d(i,j) / 1000 ;
+Variables
+     x(i,j)  shipment quantities in cases
+     z       total transportation costs in thousands of dollars ;
+Positive variables x ;
+Equations
+     cost        define objective function
+     supply(i)   observe supply limit at plant i
+     demand(j)   satisfy demand at market j ;
+cost ..        z  =e=  sum((i,j), c(i,j)*x(i,j)) ;
+supply(i) ..   sum(j, x(i,j))  =l=  a(i) ;
+demand(j) ..   sum(i, x(i,j))  =g=  b(j) ;
+Model transport /all/ ;
+Solve transport using LP minimizing z ;`,
+          output: 'Click the run button in order to retreive results for your model.',
+          running: false,
+          category: 'lp',
+          solver: 'CPLEX',
+          language: 'GAMS'
+        }
+      },
+      mounted() {
+        return this.getSolvers()
+      },
+      methods: {
+        getSolvers() {
+          NEOS.listAllSolvers()
+            .then(res => {
+              const categories = []
+              const solvers = []
+              const languages = []
+
+              res.forEach(res => {
+                res = res.split(':')
+                categories.push(res[0])
+                solvers.push(res[1])
+                languages.push(res[2])
+              })
+
+              // update dropdown options
+              this.categories = _.uniq(categories)
+              this.solvers = _.uniq(solvers)
+              this.languages = _.uniq(languages)
+
+              // finished loading
+              this.loading = false
+            })
+        },
+
+        solveModel() {
+          // don't sent new job to NEOS while previous job ins't finished
+          if (this.running) {
+            return
+          }
+          // indicate that NEOS job is currently running
+          this.running = true
+          // update output message
+          this.output = "Sending Job to NEOS and waiting for results..."
+
+          NEOS.getSolverTemplate(this.category, this.solver, this.language)
+          .then(template => {
+            return NEOS.prepareJob(template, this.input, 'emailMandatoryForCPLEX@test.com')
+          })
+          .then(NEOS.submitJob)
+          .then(NEOS.getFinalResults)
+          .then(res => {
+            this.running = false
+            this.output = res
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        }
+
+      }
+    })
+  </script>
+</body>
+
+</html>
