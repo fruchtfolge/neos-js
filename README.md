@@ -12,6 +12,28 @@ Or grab a release archive file from the dist folder.
 
 ## Examples
 Browser:
+In the header include
+```html
+<script src="assets/neos.min.js"></script>
+```
+then
+```html
+<script type="text/javascript">
+  NEOS.getSolverTemplate('MILP', 'CPLEX', 'GAMS')
+  .then(template => {
+    return NEOS.prepareJob(template, model, 'emailMandatoryForCPLEX@test.com')
+  })
+  .then(NEOS.submitJob)
+  .then(NEOS.getFinalResults)
+  .then(res => {
+    // work with the resulting listing file
+  })
+  .catch(err => {
+    // catch errors
+  })
+</script>
+```
+
 Check out the GAMS online code editor example
 
 Node.js
