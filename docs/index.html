@@ -38,12 +38,12 @@
             </option>
           </select>
           <select v-model="solver">
-            <option v-for="option in solvers" v-bind:value="option">
+            <option v-for="option in curSolvers" v-bind:value="option">
               {{ option }}
             </option>
           </select>
           <select v-model="language">
-            <option v-for="option in languages" v-bind:value="option">
+            <option v-for="option in curLanguages" v-bind:value="option">
               {{ option }}
             </option>
           </select>
@@ -104,10 +104,28 @@ Solve transport using LP minimizing z ;`,
       mounted() {
         return this.getSolvers()
       },
+      computed: {
+        curSolvers() {
+          return this.solvers.filter(solver => {
+            const element = _.find(this.listAllSolvers, { 'category': this.category, 'solver': solver })
+            if (element) return true
+          })
+        },
+        curLanguages() {
+          return this.languages.filter(language => {
+            const element = _.find(this.listAllSolvers, { 'category': this.category, 'solver': this.solver, 'language': language })
+            if (element) return true
+          })
+        }
+      },
       methods: {
         getSolvers() {
           NEOS.listAllSolvers()
             .then(res => {
+              // store array with all solver for later
+              this.listAllSolvers = []
+
+              // initialise empty arrays
               const categories = []
               const solvers = []
               const languages = []
@@ -117,6 +135,12 @@ Solve transport using LP minimizing z ;`,
                 categories.push(res[0])
                 solvers.push(res[1])
                 languages.push(res[2])
+
+                this.listAllSolvers.push({
+                  category: res[0],
+                  solver: res[1],
+                  language: res[2]
+                })
               })
 
               // update dropdown options
@@ -132,7 +156,7 @@ Solve transport using LP minimizing z ;`,
         solveModel() {
           // don't sent new job to NEOS while previous job ins't finished
           if (this.running) {
-            return
+            return this.output = 'Please be patient. Only one submission at a time...'
           }
           // indicate that NEOS job is currently running
           this.running = true
@@ -144,13 +168,16 @@ Solve transport using LP minimizing z ;`,
             return NEOS.prepareJob(template, this.input, 'emailMandatoryForCPLEX@test.com')
           })
           .then(NEOS.submitJob)
-          .then(NEOS.getFinalResults)
+          .then(creds => {
+            if (creds.jobNumber === 0) return this.output = creds.password
+            return NEOS.getFinalResults(creds)
+          })
           .then(res => {
             this.running = false
             this.output = res
           })
           .catch(err => {
-            console.log(err)
+            return this.output = err
           })
         }
 
