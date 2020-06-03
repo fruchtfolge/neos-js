@@ -1,6 +1,6 @@
 {
   "name": "neos-js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "dist/neos.cjs.js",
   "module": "dist/neos.esm.js",
   "browser": "dist/neos.min.js",
