@@ -1,9 +1,9 @@
-const https = require('https')
-const json2xml = require('json2xml')
-const xml2json = require('./parser.js')
-const decode = require('unescape')
+import { request } from 'https'
+import json2xml from 'json2xml'
+import { parse as xml2json } from 'fast-xml-parser'
+import decode from 'unescape'
 
-module.exports = {
+export default {
   xmlrpc(method, params) {
     let xml
     if (params) {
@@ -58,19 +58,19 @@ module.exports = {
 
   call(method, args) {
     return new Promise((resolve, reject) => {
-      const request = this.xmlrpc(method, args)
-
+      const query = this.xmlrpc(method, args)
       const options = {
         hostname: 'neos-server.org',
         port: 3333,
+        protocol: 'https:',
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': request.length
+          'Content-Type': 'application/xml',
+          'Content-Length': query.length
         }
       }
 
-      const req = https.request(options, (res) => {
+      const req = request(options, (res) => {
         let xmlData
 
         res.on('data', chunk => {
@@ -96,20 +96,20 @@ module.exports = {
         reject(error)
       })
 
-      req.write(request)
+      req.write(query)
       req.end()
     })
   },
 
   getJSON(xml) {
-    const json = xml2json.parse(xml)
+    const json = xml2json(xml)
     return this.getValue(json)
   },
 
   getValue(json) {
     const flatRes = this.flattenObject(json)
     const resArray = Object.keys(flatRes).map(x => {
-      if (x.includes('base64')) return atob(flatRes[x])
+      if (x.includes('base64')) return Buffer.from(flatRes[x], 'base64').toString()
       return flatRes[x]
     })
 
@@ -144,15 +144,49 @@ module.exports = {
       try {
         template = decode(template)
         // delete insert value placeholders
-        const insertValue = new RegExp('...Insert Value Here...', 'g')
+        const insertValue = new RegExp(/<!\[CDATA\[\n\.\.\.Insert Value Here\.\.\.\n\]\]>/g)
         template = template.replace(insertValue, '')
         // insert model
-        template = template.replace('<model><![CDATA[\n\n]]></model>',`<model><![CDATA[\n${model}\n]]></model>`)
+        template = template.replace('<model></model>',`<model><![CDATA[\n${model}\n]]></model>`)
         // insert email
         template = template.split('</document>')
         return resolve(`${template[0]}\n<email>${email}</email>\n</document>`)
       } catch (e) {
         return reject(e)
+      }
+    })
+  },
+  
+  xmlstring(obj) {
+    return new Promise ((resolve, reject) => {
+      try {
+        // wrap contents in CDATA tags, mutate original object
+        Object.keys(obj).forEach(key => {
+          if (obj[key]) obj[key] = `<![CDATA[${obj[key]}]]>`
+        })
+        let string = json2xml({document: obj})
+        string = string
+          .replace(/&lt;!\[CDATA\[/g, '<![CDATA[')
+          .replace(/\]\]&gt;/g, ']]>')
+        resolve(string)
+      } catch (e) {
+        reject(e)
+      }
+    })
+
+  },
+  
+  parseXML(string) {
+    return new Promise((resolve,reject) => {
+      try {
+        const json = xml2json(string)
+        if (Object.keys(json).length === 1 && json.document) {
+          resolve(json.document)
+        } else {
+          resolve(json)
+        }
+      } catch (e) {
+        reject(e)
       }
     })
   }

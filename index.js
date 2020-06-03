@@ -1,45 +1,45 @@
-const util = require('./src/utils.js')
+import helpers from './src/helpers.js'
 
 const NEOS = {
   // Retrieving information from NEOS
   help() {
-    return util.call('help')
+    return helpers.call('help')
   },
   emailHelp() {
-    return util.call('emailHelp')
+    return helpers.call('emailHelp')
   },
   welcome() {
-    return util.call('welcome')
+    return helpers.call('welcome')
   },
   version() {
-    return util.call('version')
+    return helpers.call('version')
   },
   ping() {
-    return util.call('ping')
+    return helpers.call('ping')
   },
   printQueue() {
-    return util.call('printQueue')
+    return helpers.call('printQueue')
   },
   getSolverTemplate(category, solvername, inputMethod) {
-    return util.call('getSolverTemplate', [category, solvername, inputMethod])
+    return helpers.call('getSolverTemplate', [category, solvername, inputMethod])
   },
   listAllSolvers() {
-    return util.call('listAllSolvers')
+    return helpers.call('listAllSolvers')
   },
   listCategories() {
-    return util.call('listCategories')
+    return helpers.call('listCategories')
   },
   listSolversInCategory(category) {
-    return util.call('listSolversInCategory', [category])
+    return helpers.call('listSolversInCategory', [category])
   },
 
   // Submitting Jobs and Retrieving Results from NEOS
   submitJob(xml) {
-    return util.call('submitJob', [xml])
+    return helpers.call('submitJob', [xml])
   },
 
   authenticatedSubmitJob(xml, user, password) {
-    return util.call('authenticatedSubmitJob', [xml, user, password])
+    return helpers.call('authenticatedSubmitJob', [xml, user, password])
   },
 
   getJobStatus(jobNumber, password) {
@@ -48,7 +48,7 @@ const NEOS = {
       jobNumber = credentials.jobNumber
       password = credentials.password
     }
-    return util.call('getJobStatus', [jobNumber, password])
+    return helpers.call('getJobStatus', [jobNumber, password])
   },
 
   getJobInfo(jobNumber, password) {
@@ -57,7 +57,7 @@ const NEOS = {
       jobNumber = credentials.jobNumber
       password = credentials.password
     }
-    return util.call('getJobInfo', [jobNumber, password])
+    return helpers.call('getJobInfo', [jobNumber, password])
   },
 
   killJob(jobNumber, password) {
@@ -66,7 +66,7 @@ const NEOS = {
       jobNumber = credentials.jobNumber
       password = credentials.password
     }
-    return util.call('killJob', [jobNumber, password])
+    return helpers.call('killJob', [jobNumber, password])
   },
 
   getFinalResults(jobNumber, password) {
@@ -75,11 +75,11 @@ const NEOS = {
       jobNumber = credentials.jobNumber
       password = credentials.password
     }
-    return util.call('getFinalResults', [jobNumber, password])
+    return helpers.call('getFinalResults', [jobNumber, password])
   },
 
   getIntermediateResults(jobNumber, password, offset) {
-    return util.call('getIntermediateResults', [jobNumber, password, offset])
+    return helpers.call('getIntermediateResults', [jobNumber, password, offset])
   },
 
   getFinalResultsNonBlocking(jobNumber, password) {
@@ -88,24 +88,28 @@ const NEOS = {
       jobNumber = credentials.jobNumber
       password = credentials.password
     }
-    return util.call('getFinalResultsNonBlocking', [jobNumber, password])
+    return helpers.call('getFinalResultsNonBlocking', [jobNumber, password])
   },
 
   getIntermediateResultsNonBlocking(jobNumber, password, offset) {
-    return util.call('getIntermediateResultsNonBlocking', [jobNumber, password, offset])
+    return helpers.call('getIntermediateResultsNonBlocking', [jobNumber, password, offset])
   },
 
   getOutputFile(jobNumber, password, filename) {
-    return util.call('getOutputFile', [jobNumber, password, filename])
+    return helpers.call('getOutputFile', [jobNumber, password, filename])
   },
 
   prepareJob(template, model, email) {
-    return util.prepareJob(template, model, email)
+    return helpers.prepareJob(template, model, email)
+  },
+  
+  xmlstring(obj) {
+    return helpers.xmlstring(obj)
+  },
+  
+  parseXML(string) {
+    return helpers.parseXML(string)
   }
 }
 
-if (typeof window !== 'undefined') {
-  window.NEOS = NEOS
-}
-
-module.exports = NEOS
+export default NEOS
