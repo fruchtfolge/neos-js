@@ -2,6 +2,8 @@
 
 A complete [XML-RPC client](https://neos-server.org/neos/xml-rpc.html) for the [Neos Numerical Optimisation Server](https://neos-server.org/neos/). Works in the browser and Node.js
 
+For parsing the results of a GAMS job returned by NEOS, check out [gams2js](https://github.com/chrispahm/gams2js)!
+
 ## Installation
 To install via npm:
 ```
