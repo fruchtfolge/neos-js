@@ -1,15 +1,15 @@
 'use strict';
 
+var fetch = require('node-fetch')
+
 var json2xml = require('json2xml');
 var fastXmlParser = require('fast-xml-parser');
 var decode = require('unescape');
-var fetch = require('node-fetch');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var json2xml__default = /*#__PURE__*/_interopDefaultLegacy(json2xml);
 var decode__default = /*#__PURE__*/_interopDefaultLegacy(decode);
-var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 var helpers = {
   xmlrpc(method, params) {
@@ -70,12 +70,12 @@ var helpers = {
       cache: 'no-cache',
       method: 'POST',
       headers: {
-        'Content-Type': 'application/xml',
-        'Content-Length': query.length
+        'content-type': 'application/xml',
+        'content-length': query.length
       },
       body: query
     };
-    const response = await fetch__default['default']('https://neos-server.org:3333', options);
+    const response = await fetch('https://neos-server.org:3333', options);
     const xml = await response.text();
     const result = this.getJSON(xml);
     if (!result) {
