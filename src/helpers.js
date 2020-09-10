@@ -1,7 +1,6 @@
 import json2xml from 'json2xml'
 import { parse as xml2json } from 'fast-xml-parser'
 import decode from 'unescape'
-import fetch from 'node-fetch'
 
 export default {
   xmlrpc(method, params) {
@@ -62,8 +61,8 @@ export default {
       cache: 'no-cache',
       method: 'POST',
       headers: {
-        'Content-Type': 'application/xml',
-        'Content-Length': query.length
+        'content-type': 'application/xml',
+        'content-length': query.length
       },
       body: query
     }
