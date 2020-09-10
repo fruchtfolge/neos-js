@@ -1,11 +1,15 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var https = require('https');
-var json2xml = _interopDefault(require('json2xml'));
+var json2xml = require('json2xml');
 var fastXmlParser = require('fast-xml-parser');
-var decode = _interopDefault(require('unescape'));
+var decode = require('unescape');
+var fetch = require('node-fetch');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var json2xml__default = /*#__PURE__*/_interopDefaultLegacy(json2xml);
+var decode__default = /*#__PURE__*/_interopDefaultLegacy(decode);
+var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 var helpers = {
   xmlrpc(method, params) {
@@ -43,14 +47,14 @@ var helpers = {
             }
           };
 
-      xml = json2xml({
+      xml = json2xml__default['default']({
         methodCall: {
           methodName: method,
           params: xmlParams
         }
       });
     } else {
-      xml = json2xml({
+      xml = json2xml__default['default']({
         methodCall: {
           methodName: method
         }
@@ -59,52 +63,33 @@ var helpers = {
 
     return '<?xml version="1.0"?>' + xml
   },
-
-  call(method, args) {
-    return new Promise((resolve, reject) => {
-      const query = this.xmlrpc(method, args);
-      const options = {
-        hostname: 'neos-server.org',
-        port: 3333,
-        protocol: 'https:',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/xml',
-          'Content-Length': query.length
-        }
-      };
-
-      const req = https.request(options, (res) => {
-        let xmlData;
-
-        res.on('data', chunk => {
-          xmlData += chunk;
-        });
-
-        res.on('end', () => {
-          const result = this.getJSON(xmlData.toString());
-          if (!result) {
-            reject('No JSON data found, original XML from NEOS: ' + xmlData);
-          } else if (method === 'submitJob' || method === 'authenticatedSubmitJob') {
-            resolve({
-              jobNumber: result[0],
-              password: result[1]
-            });
-          } else {
-            resolve(result);
-          }
-        });
-      });
-
-      req.on('error', (error) => {
-        reject(error);
-      });
-
-      req.write(query);
-      req.end();
-    })
+  
+  async call(method, args) {
+    const query = this.xmlrpc(method, args);
+    const options = {
+      cache: 'no-cache',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/xml',
+        'Content-Length': query.length
+      },
+      body: query
+    };
+    const response = await fetch__default['default']('https://neos-server.org:3333', options);
+    const xml = await response.text();
+    const result = this.getJSON(xml);
+    if (!result) {
+      throw new Error('No JSON data found, original XML from NEOS: ' + xml)
+    } else if (method === 'submitJob' || method === 'authenticatedSubmitJob') {
+      return {
+        jobNumber: result[0],
+        password: result[1]
+      }
+    } else {
+      return result
+    }
   },
-
+  
   getJSON(xml) {
     const json = fastXmlParser.parse(xml);
     return this.getValue(json)
@@ -146,12 +131,12 @@ var helpers = {
   prepareJob(template, model, email) {
     return new Promise((resolve, reject) => {
       try {
-        template = decode(template);
-        // delete insert value placeholders
-        const insertValue = new RegExp(/<!\[CDATA\[\n\.\.\.Insert Value Here\.\.\.\n\]\]>/g);
+        template = decode__default['default'](template);
+        // delete 'insert value' placeholders
+        const insertValue = new RegExp(/\.\.\.Insert Value Here\.\.\./g);
         template = template.replace(insertValue, '');
         // insert model
-        template = template.replace('<model></model>',`<model><![CDATA[\n${model}\n]]></model>`);
+        template = template.replace('<model><![CDATA[]]></model>',`<model><![CDATA[\n${model}\n]]></model>`);
         // insert email
         template = template.split('</document>');
         return resolve(`${template[0]}\n<email>${email}</email>\n</document>`)
@@ -164,20 +149,15 @@ var helpers = {
   xmlstring(obj) {
     return new Promise ((resolve, reject) => {
       try {
-        // wrap contents in CDATA tags, mutate original object
-        Object.keys(obj).forEach(key => {
-          if (obj[key]) obj[key] = `<![CDATA[${obj[key]}]]>`;
-        });
-        let string = json2xml({document: obj});
-        string = string
-          .replace(/&lt;!\[CDATA\[/g, '<![CDATA[')
-          .replace(/\]\]&gt;/g, ']]>');
-        resolve(string);
+        // wrap contents in CDATA tags
+        const xml = Object.keys(obj).reduce((string, key) => {
+          return string += `<${key}><![CDATA[${obj[key]}]]></${key}>`
+        },'<document>') + '</document>';
+        resolve(xml);
       } catch (e) {
         reject(e);
       }
     })
-
   },
   
   parseXML(string) {
