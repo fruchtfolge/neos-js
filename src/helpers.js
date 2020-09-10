@@ -1,7 +1,7 @@
-import { request } from 'https'
 import json2xml from 'json2xml'
 import { parse as xml2json } from 'fast-xml-parser'
 import decode from 'unescape'
+import fetch from 'node-fetch'
 
 export default {
   xmlrpc(method, params) {
@@ -55,52 +55,33 @@ export default {
 
     return '<?xml version="1.0"?>' + xml
   },
-
-  call(method, args) {
-    return new Promise((resolve, reject) => {
-      const query = this.xmlrpc(method, args)
-      const options = {
-        hostname: 'neos-server.org',
-        port: 3333,
-        protocol: 'https:',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/xml',
-          'Content-Length': query.length
-        }
+  
+  async call(method, args) {
+    const query = this.xmlrpc(method, args)
+    const options = {
+      cache: 'no-cache',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/xml',
+        'Content-Length': query.length
+      },
+      body: query
+    }
+    const response = await fetch('https://neos-server.org:3333', options)
+    const xml = await response.text()
+    const result = this.getJSON(xml)
+    if (!result) {
+      throw new Error('No JSON data found, original XML from NEOS: ' + xml)
+    } else if (method === 'submitJob' || method === 'authenticatedSubmitJob') {
+      return {
+        jobNumber: result[0],
+        password: result[1]
       }
-
-      const req = request(options, (res) => {
-        let xmlData
-
-        res.on('data', chunk => {
-          xmlData += chunk
-        })
-
-        res.on('end', () => {
-          const result = this.getJSON(xmlData.toString())
-          if (!result) {
-            reject('No JSON data found, original XML from NEOS: ' + xmlData)
-          } else if (method === 'submitJob' || method === 'authenticatedSubmitJob') {
-            resolve({
-              jobNumber: result[0],
-              password: result[1]
-            })
-          } else {
-            resolve(result)
-          }
-        })
-      })
-
-      req.on('error', (error) => {
-        reject(error)
-      })
-
-      req.write(query)
-      req.end()
-    })
+    } else {
+      return result
+    }
   },
-
+  
   getJSON(xml) {
     const json = xml2json(xml)
     return this.getValue(json)
@@ -143,11 +124,11 @@ export default {
     return new Promise((resolve, reject) => {
       try {
         template = decode(template)
-        // delete insert value placeholders
-        const insertValue = new RegExp(/<!\[CDATA\[\n\.\.\.Insert Value Here\.\.\.\n\]\]>/g)
+        // delete 'insert value' placeholders
+        const insertValue = new RegExp(/\.\.\.Insert Value Here\.\.\./g)
         template = template.replace(insertValue, '')
         // insert model
-        template = template.replace('<model></model>',`<model><![CDATA[\n${model}\n]]></model>`)
+        template = template.replace('<model><![CDATA[]]></model>',`<model><![CDATA[\n${model}\n]]></model>`)
         // insert email
         template = template.split('</document>')
         return resolve(`${template[0]}\n<email>${email}</email>\n</document>`)
@@ -160,20 +141,15 @@ export default {
   xmlstring(obj) {
     return new Promise ((resolve, reject) => {
       try {
-        // wrap contents in CDATA tags, mutate original object
-        Object.keys(obj).forEach(key => {
-          if (obj[key]) obj[key] = `<![CDATA[${obj[key]}]]>`
-        })
-        let string = json2xml({document: obj})
-        string = string
-          .replace(/&lt;!\[CDATA\[/g, '<![CDATA[')
-          .replace(/\]\]&gt;/g, ']]>')
-        resolve(string)
+        // wrap contents in CDATA tags
+        const xml = Object.keys(obj).reduce((string, key) => {
+          return string += `<${key}><![CDATA[${obj[key]}]]></${key}>`
+        },'<document>') + '</document>'
+        resolve(xml)
       } catch (e) {
         reject(e)
       }
     })
-
   },
   
   parseXML(string) {
