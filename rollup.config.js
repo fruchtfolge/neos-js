@@ -1,7 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import nodePolyfills from 'rollup-plugin-node-polyfills'
-import nodeGlobals from 'rollup-plugin-node-globals'
 import { terser } from 'rollup-plugin-terser'
 import pkg from './package.json'
 
@@ -12,7 +11,10 @@ export default [
     output: {
       name: 'NEOS',
       file: pkg.browser,
-      format: 'umd'
+      format: 'umd',
+      globals: {
+        'node-fetch': 'fetch'
+      }
     },
     plugins: [
       resolve({
@@ -20,13 +22,6 @@ export default [
       }),
       commonjs(),
       nodePolyfills(),
-      nodeGlobals({
-        process: false,
-        global: false,
-        dirname: false,
-        filename: false,
-        baseDir: false
-      }),
       terser()
     ]
   },
@@ -35,7 +30,10 @@ export default [
     output: {
       name: 'NEOS',
       file: 'docs/assets/neos.min.js',
-      format: 'umd'
+      format: 'umd',
+      globals: {
+        'node-fetch': 'fetch'
+      }
     },
     plugins: [
       resolve({
@@ -43,13 +41,6 @@ export default [
       }),
       commonjs(),
       nodePolyfills(),
-      nodeGlobals({
-        process: false,
-        global: false,
-        dirname: false,
-        filename: false,
-        baseDir: false
-      }),
       terser()
     ]
   },
@@ -59,7 +50,8 @@ export default [
     external: [
       'fast-xml-parser',
       'json2xml',
-      'unescape'
+      'unescape',
+      'node-fetch'
     ],
     output: [{
       file: pkg.main,
