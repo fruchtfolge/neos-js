@@ -5,7 +5,7 @@ const fs = require('fs')
 
 // read example GAMS transport model
 const gms = fs.readFileSync('test/transport_model.gms', 'utf-8')
-
+const realWordModel = fs.readFileSync('test/fruchtfolge.gms', 'utf-8')
 // test all methods without args
 NEOS.help()
   .then(res => {
@@ -29,7 +29,7 @@ NEOS.emailHelp()
 
 NEOS.welcome()
   .then(res => {
-    //fs.writeFileSync('test/responses/welcome.json',JSON.stringify(res),'utf-8')
+    // fs.writeFileSync('test/responses/welcome.json',JSON.stringify(res),'utf-8')
     const expected = fs.readFileSync('test/responses/welcome.json','utf-8')
     assert.deepEqual(JSON.stringify(res),expected)
   })
@@ -76,7 +76,7 @@ NEOS.listAllSolvers()
 
 NEOS.listCategories()
   .then(res => {
-    //fs.writeFileSync('test/responses/listCategories.json',JSON.stringify(res),'utf-8')
+    // fs.writeFileSync('test/responses/listCategories.json',JSON.stringify(res),'utf-8')
     const expected = fs.readFileSync('test/responses/listCategories.json','utf-8')
     assert.deepEqual(JSON.stringify(res),expected)
   })
@@ -105,7 +105,6 @@ NEOS.listSolversInCategory('MILP')
     console.log(err)
   })
 
-
 // test README example
 NEOS.xmlstring({
   category: 'LP',
@@ -114,6 +113,38 @@ NEOS.xmlstring({
   model: gms,
   email: 'test@test.com'
 })
+  .then(NEOS.submitJob)
+  .then(NEOS.getFinalResults)
+  .then(res => {
+    if (typeof res !== 'string') throw new Error('GAMS job failed')
+    else if (!res.includes('Normal Completion')) throw new Error('GAMS job failed: \n' + res)
+  })
+  .catch(err => {
+    console.error(err)
+  })
+
+// test README example with more complex, real world model
+NEOS.xmlstring({
+  category: 'MILP',
+  solver: 'Cbc',
+  inputMethod: 'GAMS',
+  model: realWordModel
+})
+  .then(NEOS.submitJob)
+  .then(NEOS.getFinalResults)
+  .then(res => {
+    if (typeof res !== 'string') throw new Error('GAMS job failed')
+    else if (!res.includes('Normal Completion')) throw new Error('GAMS job failed: \n' + res)
+  })
+  .catch(err => {
+    console.error(err)
+  })
+
+// test solver template version
+NEOS.getSolverTemplate('MILP', 'Cbc', 'GAMS')
+  .then(template => {
+    return NEOS.prepareJob(template, realWordModel, '')
+  })
   .then(NEOS.submitJob)
   .then(NEOS.getFinalResults)
   .then(res => {
